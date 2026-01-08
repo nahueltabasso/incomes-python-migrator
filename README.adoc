@@ -1,6 +1,6 @@
 == Migrator
 
-A Python-based data migration tool that pulls user and financial data from an external API and persists it into a MySQL database using SQLAlchemy and Alembic.
+A Python-based data migration tool that pulls user and financial data from an external API, more specifically from a personal project called https://github.com/nahueltabasso/backend-ingreso-egreso[IngresoEgreso] and persists it into a MySQL database using SQLAlchemy and Alembic.
 
 === Features
 
@@ -42,10 +42,10 @@ poetry install
 
 ----
 API_URL=https://your-api.example.com
-MYSQL_HOST=127.0.0.1
-MYSQL_PORT=3307
-MYSQL_USER=root
-MYSQL_PASSWORD=root
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=user
+MYSQL_PASSWORD=pass
 MYSQL_DATABASE=ingreso_egreso_db_test
 USERNAMES=user1,user2
 PASSWORD=pass1,pass2
@@ -55,7 +55,7 @@ COMMON_PASSWORD=your_default_password
 . Ensure the MySQL database exists. SQLAlchemy creates tables, not databases:
 
 ----
-mysql -h 127.0.0.1 -P 3307 -u root -p -e "CREATE DATABASE ingreso_egreso_db_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -h 127.0.0.1 -P 3300 -u user -p -e "CREATE DATABASE ingreso_egreso_db_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ----
 
 === Running
