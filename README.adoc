@@ -1,0 +1,119 @@
+== Migrator
+
+A Python-based data migration tool that pulls user and financial data from an external API and persists it into a MySQL database using SQLAlchemy and Alembic.
+
+=== Features
+
+- User migration with role assignment
+- Historical income migration
+- Income transactions migration
+- Optional dollar operations migration
+- Configurable logging to file
+- Database schema management via Alembic
+
+=== Requirements
+
+- Python 3.10 (managed via Poetry)
+- MySQL Server
+- OpenSSL 3 on macOS (for Python SSL support)
+
+=== Project Structure
+
+```
+src/
+	config/            # settings, database engine, logging
+	models/            # SQLAlchemy ORM models
+	services/          # API client (httpx)
+	migrator/          # migration flows per domain
+alembic/             # Alembic environment & versions
+sql/                 # optional raw SQL scripts
+logs/                # app logs (git-ignored)
+```
+
+=== Setup
+
+. Install Poetry dependencies:
+
+----
+poetry install
+----
+
+. Configure environment variables in a `.env` file (referenced by `src/config/settings.py`). Typical variables:
+
+----
+API_URL=https://your-api.example.com
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3307
+MYSQL_USER=root
+MYSQL_PASSWORD=root
+MYSQL_DATABASE=ingreso_egreso_db_test
+USERNAMES=user1,user2
+PASSWORD=pass1,pass2
+COMMON_PASSWORD=your_default_password
+----
+
+. Ensure the MySQL database exists. SQLAlchemy creates tables, not databases:
+
+----
+mysql -h 127.0.0.1 -P 3307 -u root -p -e "CREATE DATABASE ingreso_egreso_db_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+----
+
+=== Running
+
+Run the migration script:
+
+----
+poetry run python src/main.py
+----
+
+Logs are written to `logs/app.log`.
+
+=== Database Migrations (Alembic)
+
+Generate a revision from current models:
+
+----
+poetry run alembic revision --autogenerate -m "Sync schema"
+----
+
+Apply migrations:
+
+----
+poetry run alembic upgrade head
+----
+
+If the database has an orphaned revision ID (error like "Can't locate revision"), you can reset the pointer:
+
+----
+poetry run alembic stamp base
+poetry run alembic revision --autogenerate -m "Initial schema"
+poetry run alembic upgrade head
+----
+
+=== API Client Notes
+
+- `src/services/api_service.py` uses async `httpx`. Call endpoints via `asyncio.run(...)` from `main.py`.
+- Ensure return types in the service match actual API responses (e.g., dict vs list[dict]).
+
+=== Models & Relationships
+
+- Keep a single `Base` import across the project (prefer `src.config.database.Base`).
+- When passing ORM objects between modules, reuse a single SQLAlchemy `Session` to avoid detached instances; alternatively pass IDs.
+
+=== Troubleshooting
+
+- Unknown database: Create the database in MySQL before running.
+- SSL errors on macOS: Reinstall Python 3.10 with OpenSSL 3 and recreate the Poetry venv.
+- Date/time errors: Convert millisecond epoch to `date`/`datetime` before inserting.
+- Alembic “Target database is not up to date”: run `poetry run alembic upgrade head` first.
+
+=== Development Tips
+
+- Use logging instead of prints; configure via `src/config/logging_config.py`.
+- Validate input payloads with Pydantic for stronger typing.
+- Prefer batch inserts (`add_all`) for large migrations.
+
+=== License
+
+This project is for internal migration purposes. Add a license file if distributing.
+

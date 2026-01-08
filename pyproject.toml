@@ -1,0 +1,27 @@
+[project]
+name = "migrator"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Nahuel Tabasso",email = "nahueltabasso@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests (>=2.32.5,<3.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "pydantic-settings (>=2.12.0,<3.0.0)",
+    "sqlalchemy (==2.0.45)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "mysql-connector-python (==9.5.0)",
+    "alembic (>=1.17.2,<2.0.0)",
+    "passlib (>=1.7.4,<2.0.0)",
+    "bcrypt (>=5.0.0,<6.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "migrator", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
